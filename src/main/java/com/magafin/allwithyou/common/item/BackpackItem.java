@@ -6,7 +6,6 @@ import com.magafin.allwithyou.common.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.Equipable;
@@ -26,7 +25,6 @@ import java.util.Optional;
 
 public class BackpackItem extends BundleItem implements Equipable {
 
-
     public BackpackItem(Properties properties) {
         super(properties);
     }
@@ -40,6 +38,9 @@ public class BackpackItem extends BundleItem implements Equipable {
                     player.playSound(net.minecraft.sounds.SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
                     slotAccess.set(itemStack);
                 });
+
+                player.containerMenu.slotsChanged(player.getInventory());
+
                 if (isForbiddenContainer(other)) return true;
                 return true;
             } else {
@@ -48,6 +49,9 @@ public class BackpackItem extends BundleItem implements Equipable {
                 if (other.getCount() < initialCount) {
                     player.playSound(net.minecraft.sounds.SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
                 }
+
+                player.containerMenu.slotsChanged(player.getInventory());
+
                 return true;
             }
         }
@@ -104,6 +108,9 @@ public class BackpackItem extends BundleItem implements Equipable {
                     player.playSound(net.minecraft.sounds.SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
                     slot.set(itemStack);
                 });
+
+                player.containerMenu.slotsChanged(player.getInventory());
+
                 return true;
             } else {
                 int initialCount = itemInSlot.getCount();
@@ -111,6 +118,9 @@ public class BackpackItem extends BundleItem implements Equipable {
                 if (itemInSlot.getCount() < initialCount) {
                     player.playSound(net.minecraft.sounds.SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
                 }
+
+                player.containerMenu.slotsChanged(player.getInventory());
+
                 return true;
             }
         }
@@ -131,6 +141,7 @@ public class BackpackItem extends BundleItem implements Equipable {
     private boolean canFitInside(ItemStack stack) {
         return !(stack.getItem() instanceof BundleItem) && !(stack.getItem() instanceof BackpackItem);
     }
+
     private int tryInsert(ItemStack backpack, ItemStack stack) {
         if (stack.isEmpty() || !canFitInside(stack)) return 0;
 
@@ -156,18 +167,6 @@ public class BackpackItem extends BundleItem implements Equipable {
         return maxAmountToAdd;
     }
 
-    private Optional<ItemStack> removeOne(ItemStack backpack) {
-        BundleContents contents = backpack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-        List<ItemStack> currentItems = new ArrayList<>();
-        contents.items().forEach(item -> currentItems.add(item.copy()));
-
-        if (currentItems.isEmpty()) return Optional.empty();
-
-        ItemStack removed = currentItems.remove(0);
-        backpack.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(currentItems));
-        return Optional.of(removed);
-    }
-
     private static int getWeight(ItemStack stack) {
         return 64 / stack.getMaxStackSize();
     }
@@ -181,6 +180,7 @@ public class BackpackItem extends BundleItem implements Equipable {
         }
         return weight;
     }
+
     public static ItemStack customInsert(ItemStack backpack, ItemStack toInsert, Player serverPlayer) {
         if (toInsert.isEmpty() || isForbiddenContainer(toInsert)) return toInsert;
 
@@ -276,24 +276,19 @@ public class BackpackItem extends BundleItem implements Equipable {
     public int getBarColor(ItemStack stack) {
         return 0xffa923;
     }
+
     @Override
     public EquipmentSlot getEquipmentSlot() {
         return EquipmentSlot.CHEST;
     }
 
-    private void playRemoveOneSound(Player player) {
-        player.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.5F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
-    }
-
-    private void playInsertSound(Player player) {
-        player.playSound(SoundEvents.BUNDLE_INSERT, 0.5F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
-    }
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         int currentWeight = getContentsWeight(stack);
         int maxCapacity = Config.BACKPACK_CAPACITY.get();
         tooltipComponents.add(Component.translatable("item.minecraft.bundle.fullness", currentWeight, maxCapacity).withStyle(ChatFormatting.GRAY));
     }
+
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {

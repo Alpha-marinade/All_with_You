@@ -9,5 +9,8 @@
   "advancements.all_with_you.obtain_backpack.title": "Все свое ношу с собой...",
   "advancements.all_with_you.obtain_backpack.description": "Скрафтите или найдите рюкзак",
   "advancements.all_with_you.full_backpack.title": "Предел возможностей!",
-  "advancements.all_with_you.full_backpack.description": "Заполните рюкзак до отказа"
+  "advancements.all_with_you.full_backpack.description": "Заполните рюкзак до отказа",
+
+  "item.all_with_you.skeleton_backpack": "Грязный рюкзак",
+  "item.all_with_you.zombie_backpack": "Гнилой рюкзак"
 }

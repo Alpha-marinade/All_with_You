@@ -1,11 +1,14 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "all_with_you:item/backpack_open"
+    "layer0": "all_with_you:item/backpack_filled_base",
+    "layer1": "all_with_you:item/backpack_filled_overlay"
   },
   "overrides": [
     {
-      "predicate": { "all_with_you:fullness": 0.0001 },
+      "predicate": {
+        "all_with_you:fullness": 0.0001
+      },
       "model": "all_with_you:item/backpack_filled"
     }
   ]

@@ -11,5 +11,8 @@
   "advancements.all_with_you.obtain_backpack.title": "与你同在",
   "advancements.all_with_you.obtain_backpack.description": "背包在手！",
   "advancements.all_with_you.full_backpack.title": "满满当当",
-  "advancements.all_with_you.full_backpack.description": "把背包填满"
+  "advancements.all_with_you.full_backpack.description": "把背包填满",
+
+  "item.all_with_you.skeleton_backpack": "Dirty Backpack",
+  "item.all_with_you.zombie_backpack": "Rotten Backpack"
 }

@@ -11,5 +11,8 @@
   "advancements.all_with_you.obtain_backpack.title": "Tudo comigo",
   "advancements.all_with_you.obtain_backpack.description": "Obtenha uma Mochila",
   "advancements.all_with_you.full_backpack.title": "Estou de Saco Cheio!",
-  "advancements.all_with_you.full_backpack.description": "Encha sua mochila até o limite"
+  "advancements.all_with_you.full_backpack.description": "Encha sua mochila até o limite",
+
+  "item.all_with_you.skeleton_backpack": "Dirty Backpack",
+  "item.all_with_you.zombie_backpack": "Rotten Backpack"
 }

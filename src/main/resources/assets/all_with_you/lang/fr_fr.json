@@ -11,5 +11,8 @@
   "advancements.all_with_you.obtain_backpack.title": "Tous avec moi!",
   "advancements.all_with_you.obtain_backpack.description": "Obtenez un sac à dos",
   "advancements.all_with_you.full_backpack.title": "Ça ne rentre pas plus !",
-  "advancements.all_with_you.full_backpack.description": "Remplis ton sac à dos à ras bord"
+  "advancements.all_with_you.full_backpack.description": "Remplis ton sac à dos à ras bord",
+
+  "item.all_with_you.skeleton_backpack": "Dirty Backpack",
+  "item.all_with_you.zombie_backpack": "Rotten Backpack"
 }

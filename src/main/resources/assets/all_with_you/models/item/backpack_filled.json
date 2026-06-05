@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "all_with_you:item/backpack"
+    "layer0": "all_with_you:item/backpack_base",
+    "layer1": "all_with_you:item/backpack_overlay"
   }
 }

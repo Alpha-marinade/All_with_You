@@ -5,14 +5,17 @@ import com.magafin.allwithyou.client.renderer.BackpackLayer;
 import com.magafin.allwithyou.common.config.Config;
 import com.magafin.allwithyou.common.item.BackpackItem;
 import com.magafin.allwithyou.common.register.ItemsReg;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -20,9 +23,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.minecraft.core.component.DataComponents;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
@@ -47,12 +49,24 @@ public class ClientSetup {
             );
         });
     }
+
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register((stack, tintIndex) -> {
+            if (tintIndex == 0) {
+                return net.minecraft.world.item.component.DyedItemColor.getOrDefault(stack, 0xFFFFFFFF);
+            }
+            return -1;
+        }, ItemsReg.BACKPACK.get());
+    }
+
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BackpackOnPlayer.LAYER_LOCATION, BackpackOnPlayer::createBodyLayer);
     }
+
     @SubscribeEvent
-    public static void onAddLayers(net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) {
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         for (net.minecraft.client.resources.PlayerSkin.Model skinType : event.getSkins()) {
             net.minecraft.client.renderer.entity.LivingEntityRenderer<net.minecraft.client.player.AbstractClientPlayer, net.minecraft.client.model.PlayerModel<net.minecraft.client.player.AbstractClientPlayer>> renderer = event.getSkin(skinType);
 
@@ -61,46 +75,15 @@ public class ClientSetup {
             }
         }
 
-        net.minecraft.client.renderer.entity.EntityRenderer<?> armorStandRenderer = event.getRenderer(net.minecraft.world.entity.EntityType.ARMOR_STAND);
-
-        if (armorStandRenderer instanceof net.minecraft.client.renderer.entity.LivingEntityRenderer livingRenderer) {
-            @SuppressWarnings({"rawtypes", "unchecked"})
-            BackpackLayer armorStandLayer = new BackpackLayer(livingRenderer);
-
-            livingRenderer.addLayer(armorStandLayer);
-        }
-
-    }
-    @SubscribeEvent
-    public static void addBuiltInPacks(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            String modId = "all_with_you";
-
-            Map<String, String> packs = Map.of(
-                    "nomansland_compat", "All with You: No Man's Land",
-                    "darkmode", "All with You: Dark Mode",
-                    "default", "All with You: Default Mode"
-            );
-
-            packs.forEach((folderName, displayName) -> {
-                Path resourcePath = ModList.get().getModFileById(modId).getFile().findResource("resourcepacks/" + folderName);
-
-                Pack pack = Pack.readMetaAndCreate(
-                        new PackLocationInfo(
-                                modId + ":" + folderName,
-                                Component.literal(displayName),
-                                PackSource.BUILT_IN,
-                                Optional.empty()
-                        ),
-                        new PathPackResources.PathResourcesSupplier(resourcePath),
-                        PackType.CLIENT_RESOURCES,
-                        new PackSelectionConfig(false, Pack.Position.BOTTOM, false)
-                );
-
-                if (pack != null) {
-                    event.addRepositorySource(infoConsumer -> infoConsumer.accept(pack));
-                }
-            });
-        }
+        net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.stream()
+                .map(event::getRenderer)
+                .filter(renderer -> renderer instanceof net.minecraft.client.renderer.entity.LivingEntityRenderer)
+                .map(renderer -> (net.minecraft.client.renderer.entity.LivingEntityRenderer<?, ?>) renderer)
+                .filter(livingRenderer -> livingRenderer.getModel() instanceof net.minecraft.client.model.HumanoidModel)
+                .forEach(livingRenderer -> {
+                    @SuppressWarnings({"rawtypes", "unchecked"})
+                    BackpackLayer layer = new BackpackLayer(livingRenderer);
+                    livingRenderer.addLayer(layer);
+                });
     }
 }

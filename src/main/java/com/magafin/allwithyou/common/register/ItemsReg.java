@@ -16,6 +16,7 @@ public class ItemsReg {
             properties -> new BackpackItem(properties
                     .stacksTo(1)
                     .component(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY)
+                    .component(DataComponents.DYED_COLOR, new DyedItemColor(0xAD6A43, false))
                     .rarity(Rarity.UNCOMMON)
             ));
 }

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,8 +19,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class BackpackLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
     private final BackpackOnPlayer backpackModel;
-
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("all_with_you", "textures/entity/backpack_model.png");
 
     public BackpackLayer(RenderLayerParent<T, M> renderer) {
         super(renderer);
@@ -37,12 +36,13 @@ public class BackpackLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
             playerModel.copyPropertiesTo((HumanoidModel<T>) this.backpackModel);
             this.backpackModel.body.copyFrom(playerModel.body);
 
-            int color = 0xFFFFFFFF;
+            net.minecraft.world.item.component.DyedItemColor dyedColor = chestStack.get(DataComponents.DYED_COLOR);
+            int colorRgb = dyedColor != null ? dyedColor.rgb() : 0xFFFFFF;
 
             ResourceLocation baseTexture = ResourceLocation.fromNamespaceAndPath("all_with_you", "textures/entity/backpack_model_base.png");
             VertexConsumer baseConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(baseTexture));
 
-            this.backpackModel.renderToBuffer(poseStack, baseConsumer, packedLight, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), color);
+            this.backpackModel.renderToBuffer(poseStack, baseConsumer, packedLight, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), colorRgb | 0xFF000000);
 
             ResourceLocation overlayTexture = ResourceLocation.fromNamespaceAndPath("all_with_you", "textures/entity/backpack_model_overlay.png");
             VertexConsumer overlayConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(overlayTexture));

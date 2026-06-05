@@ -9,5 +9,8 @@
   "advancements.all_with_you.obtain_backpack.title": "Усе своє ношу з собою...",
   "advancements.all_with_you.obtain_backpack.description": "Виготовте або знайдіть рюкзак",
   "advancements.all_with_you.full_backpack.title": "А не репне?",
-  "advancements.all_with_you.full_backpack.description": "Наповніть рюкзак під зав'язку"
+  "advancements.all_with_you.full_backpack.description": "Наповніть рюкзак під зав'язку",
+
+  "item.all_with_you.skeleton_backpack": "Брудний рюкзак",
+  "item.all_with_you.zombie_backpack": "Гнилий рюкзак"
 }
