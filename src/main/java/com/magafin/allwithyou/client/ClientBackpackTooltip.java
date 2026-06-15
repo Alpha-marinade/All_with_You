@@ -22,6 +22,7 @@ public class ClientBackpackTooltip implements ClientTooltipComponent {
     private final List<ItemStack> items = new ArrayList<>();
     private final int totalWeight;
     private final int selectedIndex;
+    private final int color;
 
     public ClientBackpackTooltip(BackpackTooltip tooltip) {
         this.tooltip = tooltip;
@@ -29,6 +30,7 @@ public class ClientBackpackTooltip implements ClientTooltipComponent {
 
         this.totalWeight = BackpackItem.getContentsWeight(this.items);
         this.selectedIndex = tooltip.selectedIndex();
+        this.color = tooltip.color();
     }
 
     @Override
@@ -53,38 +55,49 @@ public class ClientBackpackTooltip implements ClientTooltipComponent {
     public void renderImage(Font font, int x, int y, GuiGraphics graphics) {
         int cols = this.columns();
         int rows = this.rows();
+
+        float r = ((this.color >> 16) & 0xFF) / 255.0F;
+        float g = ((this.color >> 8) & 0xFF) / 255.0F;
+        float b = (this.color & 0xFF) / 255.0F;
+
+        graphics.setColor(r, g, b, 1.0F);
         graphics.blitSprite(BACKGROUND_SPRITE, x, y, this.gridWidth(), this.gridHeight());
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         int itemIndex = 0;
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                int slotX = x + c * 18 + 1;
-                int slotY = y + r * 20 + 1;
-                this.renderSlot(slotX, slotY, itemIndex++, this.items, graphics, font);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                int slotX = x + col * 18 + 1;
+                int slotY = y + row * 20 + 1;
+                this.renderSlot(slotX, slotY, itemIndex++, this.items, graphics, font, r, g, b);
             }
         }
     }
 
-    private void renderSlot(int x, int y, int index, List<ItemStack> items, GuiGraphics graphics, Font font) {
+    private void renderSlot(int slotX, int slotY, int index, List<ItemStack> items, GuiGraphics graphics, Font font, float r, float g, float b) {
+        graphics.setColor(r, g, b, 1.0F);
+
         if (index >= items.size()) {
             if (this.totalWeight >= Config.BACKPACK_CAPACITY.get()) {
-                graphics.blitSprite(BLOCKED_SLOT_SPRITE, x, y, 18, 20);
+                graphics.blitSprite(BLOCKED_SLOT_SPRITE, slotX, slotY, 18, 20);
             } else {
-                graphics.blitSprite(SLOT_SPRITE, x, y, 18, 20);
+                graphics.blitSprite(SLOT_SPRITE, slotX, slotY, 18, 20);
             }
         } else {
-            ItemStack stack = items.get(index);
-
-            graphics.blitSprite(SLOT_SPRITE, x, y, 18, 20);
+            graphics.blitSprite(SLOT_SPRITE, slotX, slotY, 18, 20);
 
             if (index == this.selectedIndex) {
-                graphics.blitSprite(SELECTED_SLOT_SPRITE, x, y, 18, 20);
+                graphics.blitSprite(SELECTED_SLOT_SPRITE, slotX, slotY, 18, 20);
             }
+        }
 
-            graphics.renderItem(stack, x + 1, y + 1);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            graphics.renderItemDecorations(font, stack, x + 1, y + 1);
+        if (index < items.size()) {
+            ItemStack stack = items.get(index);
+            graphics.renderItem(stack, slotX + 1, slotY + 1);
+            graphics.renderItemDecorations(font, stack, slotX + 1, slotY + 1);
         }
     }
 

@@ -130,7 +130,11 @@ public class BackpackItem extends BundleItem implements Equipable {
     @Override
     public java.util.Optional<net.minecraft.world.inventory.tooltip.TooltipComponent> getTooltipImage(ItemStack stack) {
         int selectedIndex = stack.getOrDefault(com.magafin.allwithyou.common.register.DataComponentsReg.SELECTED_ITEM_INDEX.get(), 0);
-        return Optional.of(new BackpackTooltip(stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY), selectedIndex));
+
+        net.minecraft.world.item.component.DyedItemColor dyedColor = stack.get(net.minecraft.core.component.DataComponents.DYED_COLOR);
+        int color = dyedColor != null ? dyedColor.rgb() : 0xFFFFFF;
+
+        return Optional.of(new BackpackTooltip(stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY), selectedIndex, color));
     }
 
     @Override
